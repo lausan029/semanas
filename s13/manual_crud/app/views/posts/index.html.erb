@@ -1,0 +1,5 @@
+<% @posts.each do |post| %>
+ <%= post.title %>
+ <%= link_to post.content, post %>
+ <%= link_to "borrar", post, method: :delete %>
+<% end %>

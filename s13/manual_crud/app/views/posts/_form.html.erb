@@ -1,0 +1,7 @@
+<%= form_with(model: @post, local: true) do |f| %>
+ <%= f.label :title, "Titulo del post" %>
+ <%= f.text_field :title %>
+ <%= f.label :content, "Contenido del post" %>
+ <%= f.text_area :content %>
+ <%= f.submit :crear %>
+<% end %>
