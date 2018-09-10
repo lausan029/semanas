@@ -1,7 +1,18 @@
 <h1>Pages#envio</h1>
 <p>Ingrese la dos numeros</p>
-<form action="<%= pages_recibo_path %>" method="GET">
+<!-- <form action="<%= pages_recibo_path %>" method="POST">
+ <input type="hidden" value="<%= form_authenticity_token %>" name="authenticity_token">
  <input type="text" name="a">
  <input type="text" name="b">
  <input type="submit">
-</form>
+</form> -->
+
+
+<%= form_tag(pages_recibo_path, method: :post) do %>
+ <%= text_field_tag "a" %>
+ <%= text_field_tag "b" %>
+ <%= submit_tag "Enviar" %>
+ <!--<input type="text" name="a">
+ <input type="text" name="b">
+ <input type="submit"> -->
+<% end %>
