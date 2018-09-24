@@ -20,8 +20,8 @@
     <%= form.label :category_id %>
     <%= form.select :category_id, Category.pluck(:name, :id) %>
     <!--
-    <%= form.select :category_id, Category.all.map{|c| [c.name, c.id]} %>
-    <%= form.select :category_id, [["Action", 1],["Drama",2]] %>
+    <%= forma dinamica1 form.select :category_id, Category.all.map{|c| [c.name, c.id]} %>
+    <%= forma manual1 form.select :category_id, [["Action", 1],["Drama",2]] %>
     <%= form.number_field :category_id %> -->
   </div>
 
