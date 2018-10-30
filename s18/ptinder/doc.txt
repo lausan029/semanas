@@ -1,0 +1,180 @@
+crear proyecto
+	rails new nombre_proyecto
+
+modificar el gemfile para agregar devise
+
+	gem 'devise', git: 'https://github.com/plataformatec/devise.git'
+
+correr bundle
+	bundle
+
+$ rails generate devise:install
+$ rails generate devise user
+$ rails g devise:views
+$ rails g devise:controllers users
+
+
+para agregar otros campos a la migracion o a la tabla 
+
+$ rails g migration addNameAndBioAndPhotoToUser name:string photo:string bio:text 
+$ rake db:migrate
+
+
+
+$ rails g controller users
+
+crear metodo 
+
+	def search
+	end
+
+crear las rutas
+  get 'users/search'
+  root to: 'users#search'
+
+
+crear la vista 
+
+	app/views/users/search.html.erb
+
+agregar en el controlador user
+
+before_action :authenticate_user!
+NOTA: al colocar esta linea, nos va a redirigir al sign_in, luego tenemos que ir al sign_up para poder registrarnos
+
+Para agregar los otros campos al registro debemos ir a 
+app/views/devise/registrations/new.html.erb  y agregar los campos que faltan 
+
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name  %>
+  </div>
+
+Ahora tenemos que agregar estos campos a los strong params
+
+ before_action :configure_sign_up_params, only: [:create]
+
+ def configure_sign_up_params
+   devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :photo, :bio])
+ end
+
+
+luego modificar el archivo de rutas para que utilice el controlador registrations
+quitar esta linea devise_for :users
+y colocar esto 
+
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }  
+
+
+
+==============
+Para crear ususario con seed 
+
+db/seeds.rb
+
+User.destroy_all
+
+20.times do |i|
+	User.create(email: "user#{i}@gmail.com", password: '123456')
+end
+
+luego correr rake db:seed
+
+
+
+================
+
+crear un metodo en el modelo  para seleccionear un usuario random 
+
+  def self.random(user_id)
+  	User.where('id != ?', user_id).order("random()").limit(1)
+  end
+
+utilizar este metodo en el controller  en el metodo search
+
+	@user = User.random(current_user.id)
+
+mostrar el resultado en la vista
+
+
+<%= @user.email %>
+
+
+========
+
+Creando modelo de interaccion
+
+rails g model interaction user_one_id:integer user_two_id:integer like:boolean
+
+agregando fK al modelo 
+
+    add_foreign_key :interactions, :users, column: :user_one_id
+    add_foreign_key :interactions, :users, column: :user_two_id
+
+=======
+
+agregando getter y setter al modelo interaction
+
+  belongs_to :user_one, class_name: 'User'
+  belongs_to :user_two, class_name: 'User'
+
+agregando getter y setter al modelo user
+
+  has_many :interaction_one, class_name: 'Interaction', foreign_key: :user_one_id
+  has_many :interaction_two, class_name: 'Interaction', foreign_key: :user_two_id
+
+=======
+
+  creamos el controlador onteraction
+
+rails g controller interactions
+
+creamos las rutas rest solo para crear
+
+  resources :interactions, only: :create
+
+agregamos el link a la vista
+
+<%= link_to "like", interactions_path(user_two_id: @user.id, like: true),  method: :post %>
+
+agregamos el metodo create al controller interaction
+
+  def create
+    Interaction.create(user_one_id: current_user.id,
+                       user_two_id: params[:user_two_id],
+                       like: params[:like])
+    redirect_to users_search_path
+  end
+
+
+creamos el link para hacer unlike
+
+<%= link_to "unlike", interactions_path(user_two_id: @user.id, like: false),  method: :post %>
+
+
+
+========
+
+Creando modelo de match
+
+rails g model match user_one_id:integer user_two_id:integer
+
+agregando fK al modelo 
+
+    add_foreign_key :matches, :users, column: :user_one_id
+    add_foreign_key :matches, :users, column: :user_two_id
+
+agregando las relaciones
+
+agregando getter y setter al modelo match
+
+  belongs_to :user_one, class_name: 'User'
+  belongs_to :user_two, class_name: 'User'
+
+agregando getter y setter al modelo user
+
+  has_many :matches_one, class_name: 'Matches', foreign_key: :user_one_id
+
