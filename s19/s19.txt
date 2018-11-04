@@ -1,0 +1,136 @@
+rails new movietag
+rails g scaffold movie name:string
+rails g scaffold tag name:string
+rake db:migrate
+rails g migration CreateJoinTable movies tags
+rake db:migrate
+
+Ahora agregar las relaciones
+ # tres tablas dos modelos 
+	 models/movie.rb
+	 has_and_belongs_to_many :tags
+
+	 models/tag.rb
+	 has_and_belongs_to_many :movies
+
+ver en rails console 
+
+Movie.new.tags
+y 
+Tag.new.movies
+
+agregando datos
+
+m = Movie.new(name: "Terminator")
+m.tags << Tag.new(name:"Clásicos")
+m.tags << Tag.new(name:"Acción")
+m.save
+
+t = Tag.first
+t.movies << Movie.new(name: 'la sirenita')
+t.save
+
+
+borrando datos
+	
+	borrar una pelicula
+	m = Movie.last
+	m.destroy 
+
+	borrar una asociacion
+	m = Movie.last
+	t = m.tags.find_by(id: 2)
+	m.tags.delete(t)
+
+
+Creando el seed
+
+movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
+t = Tag.create(name: 'Accion')
+
+10.times do |i|
+	m = Movie.new(name: "Pelicula #{i + 1}")
+	m.tags << t
+	m.save
+end
+
+rake db:seed
+
+modificamos el controller movies 
+
+  def index
+    #@movies = Movie.all
+    @movies = Movie.limit(10)
+  end
+
+modificamos la vista index movies para add los tags
+<td><%= movie.tags.pluck(:name).join(", ")%></td>
+
+agregamos cnd aplication layaout
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+modificamos el index
+
+<table class="table">
+<td>
+  <%= form_tag("") do %>
+  <%= text_field_tag "name" %>
+  <%end  %>
+</td>
+
+member -> se utiliza cuando la accion va a una pelicula en especifica
+collection -> cuando la accion aplica para todas las peliculas 
+en esta caso digo peliculas xq esta asi el resource
+pero al final es si aplica de forma general o no a la ruta que estemos trabajando
+
+agregando la ruta 
+  resources :movies do
+  	member do
+  		post 'add_tag'
+  	end
+  end
+
+modificamos el index
+
+<%= form_tag(add_tag_movie_path(movie)) do %>
+
+agregando el metodo add_tag
+
+  before_action :set_movie, only: [:show, :edit, :update, :destroy, :add_tag]
+
+  def add_tag
+    @movie.tags << Tag.new(name: params[:name])
+    redirect_to movies_path    
+  end
+
+
+modificando el index 
+
+        <td>
+        <% movie.tags.pluck(:name).each do |name|%>
+        <%= name %> <a href="#"><span class="badge">x</span></a>
+        <%end%>
+        </td>
+
+borrar app/assets/stylesheets/scaffold.scss
+
+agregar la ruta para borrar un tag
+  		delete 'remove_tag/:tag_id', to: 'movies#remove_tag', as: 'remove_tag'
+
+modificar nuevamente el index
+
+
+   <td>
+    <% movie.tags.each do |t|%>
+    <%= t.name %> <a href="<%=remove_tag_movie_path(movie,t)%>" data-method='delete'><span class="badge">x</span></a>
+    <%end%>
+    </td>
+creamos el metodo remove tag
+
+  def remove_tag
+    t = Tag.find(params[:tag_id])
+    @movie.tags.delete(t)
+    redirect_to movies_path        
+  end
