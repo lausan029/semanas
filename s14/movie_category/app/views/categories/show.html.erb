@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<h1> Categoría: <%= @category.name %></h1>
+<h2>Peliculas:</h2>
+<ul>
+<% @category.movies.each do |movie| %>
+	<li>
+		<%= movie.name%> 
+		<%= link_to 'Eliminar', category_movie_path(@category, movie), method: :delete %>
+	</li>
+<% end %>
+</ul>
+<%= form_with(model: [@category, Movie.new], local: true) do |form| %>
+	<%= form.hidden_field :category_id, value: @category.id %>
+
+	  <div class="field">
+	    <%= form.label :name %>
+	    <%= form.text_field :name %>
+	  </div>
+
+	  <div class="actions">
+	    <%= form.submit %>
+	  </div>
+	<% end %>
+
+<%= link_to 'Edit', edit_category_path(@category) %> |
+<%= link_to 'Back', categories_path %>

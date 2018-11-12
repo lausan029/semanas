@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   get 'pages/envio'
   get 'pages/recibo'
+  post 'pages/recibo'
+
   get 'pages/my'
   get 'pages/generator'
   get 'pages/save_page'

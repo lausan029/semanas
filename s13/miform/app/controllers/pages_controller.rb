@@ -22,7 +22,7 @@ class PagesController < ApplicationController
   end
 
   def save_page
-  	@page = Page.create!(title: params[:title], upv: params[:h1]), content: params[:content]
+  	@page = Page.create!(title: params[:title], upv: params[:h1], content: params[:content])
   	redirect_to pages_my_path(id: @page.id)
   end
 end
