@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>madia queries</title>
+  <style>
+  @media(min-width: 400px) and (max-width: 600px){
+    body::after{
+      content: "Pequeño";
+    }
+   /* body{
+      background-color: green;
+    } */
+  }
+   @media(min-width: 601px) and (max-width: 800px){
+   body::after{
+      content: "Mediano";
+    }
+  }
+   @media(min-width: 801px){
+   body::after{
+      content: "Grande";
+    }
+  }
+  </style>
+</head>
+<body>
+
+</body>
+</html>
