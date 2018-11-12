@@ -1,0 +1,13 @@
+<% %>
+Ejecuta el código ruby dentro de la etiqueta.
+<%= %>
+Imprime el resultado de la expresión en la etiqueta
+<% -%>
+No agrega salto de linea después de la expresión
+<%# %>
+Comenta el código para que no se ejecute.
+
+
+SCAFFOLDING
+rails g scaffold objeto atributo1 atributo2
+rails db:migrate
